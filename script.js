@@ -38,6 +38,42 @@ function renderBoard() {
         board.appendChild(tileDiv);
     });
 }
+// 3. Shuffle logic
+function shuffle() {
+    // Simple random sort (Note: In a production game, you'd use a method that guarantees solvability)
+    tiles.sort(() => Math.random() - 0.5);
+    renderBoard();
+    
+    // Reset timer
+    clearInterval(timerInterval);
+    timeElapsed = 0;
+    timerDisplay.textContent = timeElapsed;
+    gameActive = true;
+    isPaused = false;
+    pauseBtn.disabled = false;
+    pauseBtn.textContent = "Pause";
+    
+    // Start tracking duration
+    startTimer();
+}
+
+// 4. Timer Logic using setInterval
+function startTimer() {
+    timerInterval = setInterval(() => {
+        if (!isPaused) {
+            timeElapsed++;
+            timerDisplay.textContent = timeElapsed;
+        }
+    }, 1000);
+}
+
+// Pause and Resume logic
+pauseBtn.addEventListener('click', () => {
+    if (!gameActive) return;
+    isPaused = !isPaused;
+    pauseBtn.textContent = isPaused ? "Resume" : "Pause";
+    board.style.pointerEvents = isPaused ? "none" : "auto"; // Prevent playing while paused
+});
 
 // 5. Tile movement logic (Math tracking index neighbors)
 function moveTile(index) {
