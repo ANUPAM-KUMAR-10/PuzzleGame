@@ -98,3 +98,31 @@ function moveTile(index) {
         checkWin();
     }
 }
+
+// 6. Check if player won and save high score to localStorage
+function checkWin() {
+    const winPattern = [...Array(15).keys()].map(x => x + 1);
+    winPattern.push(0);
+
+    // Verify if current array matches the winning order
+    const isWin = tiles.every((val, index) => val === winPattern[index]);
+
+    if (isWin) {
+        clearInterval(timerInterval);
+        gameActive = false;
+        pauseBtn.disabled = true;
+        alert(`Congratulations! You solved it in ${timeElapsed} seconds!`);
+
+        // Performance tracking via localStorage
+        const currentBest = localStorage.getItem('bestTime');
+        if (!currentBest || timeElapsed < parseInt(currentBest)) {
+            localStorage.setItem('bestTime', timeElapsed);
+            bestTimeDisplay.textContent = timeElapsed;
+            alert("New Best Time Record!");
+        }
+    }
+}
+
+// Event listener to kick off the game setup
+startBtn.addEventListener('click', shuffle);
+initGame();
