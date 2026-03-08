@@ -40,11 +40,32 @@ function renderBoard() {
 }
 // 3. Shuffle logic
 function shuffle() {
-    // Simple random sort (Note: In a production game, you'd use a method that guarantees solvability)
-    tiles.sort(() => Math.random() - 0.5);
+    // 1. Start with a perfectly solved board
+    tiles = [...Array(15).keys()].map(x => x + 1);
+    tiles.push(0); 
+
+    // 2. Simulate 100 real, valid slides to mix it up
+    for (let i = 0; i < 100; i++) {
+        const emptyIndex = tiles.indexOf(0);
+        const validMoves = [];
+
+        const row = Math.floor(emptyIndex / 4);
+        const col = emptyIndex % 4;
+
+        // Check which directions are physically legal to move into the empty space
+        if (row > 0) validMoves.push(emptyIndex - 4); // Move from Above
+        if (row < 3) validMoves.push(emptyIndex + 4); // Move from Below
+        if (col > 0) validMoves.push(emptyIndex - 1); // Move from Left
+        if (col < 3) validMoves.push(emptyIndex + 1); // Move from Right
+
+        // Pick one legal move at random and swap
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        tiles[emptyIndex] = tiles[randomMove];
+        tiles[randomMove] = 0;
+    }
+
+    // 3. Redraw board and reset the game state/timer
     renderBoard();
-    
-    // Reset timer
     clearInterval(timerInterval);
     timeElapsed = 0;
     timerDisplay.textContent = timeElapsed;
@@ -53,7 +74,6 @@ function shuffle() {
     pauseBtn.disabled = false;
     pauseBtn.textContent = "Pause";
     
-    // Start tracking duration
     startTimer();
 }
 
